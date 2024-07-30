@@ -8,86 +8,71 @@ from enum import Enum as PyEnum
 
 Base = declarative_base()
 
-follower = Table(
-    "follower",
-    Base.metadata,
-    Column("user_from_id",Integer, ForeignKey("users.id")),
-    Column("user_to_id", Integer, ForeignKey("users.id")),
-)
 
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = 'user'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(250), nullable =False)
+
+  
+
+
+
+class Character(Base):
+    __tablename__ = 'characters'
     # Here we define columns for the table person
     # Notice that each column is also a normal Python instance attribute.
     id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
-    username = Column(String(250), nullable=False)
-    first_name = Column(String(250), nullable=False)
-    last_name = Column(String(250), nullable=False)
-    email = Column(String(250), nullable=False)
-
-    posts = relationship('Post', back_populates = 'user')
-    comments = relationship('Comment', back_populates = 'user')
-    following = relationship('User', secondary = follower, primaryjoin = id == follower.c.user_from_id, secondaryjoin = id == follower.c.user_to_id, backref = 'followers')
+    gender = Column(String(250), nullable=False)
+    haircolor = Column(String(250), nullable=False)
+    eyecolor = Column(String(250), nullable=False)
+    favorite = Column(String(250), nullable=False)
     
+    # character_id = Column(Integer, ForeignKey('user.id'))
 
 
 
-class Post(Base):
-    __tablename__ = 'posts'
+
+class Planet(Base):
+    __tablename__ = 'planets'
     # Here we define columns for the table address.
     # Notice that each column is also a normal Python instance attribute.
     id = Column(Integer, primary_key=True)
-    title = Column(String, nullable =False)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable = False)
-    image_url = Column(String, nullable = False)
-    caption = Column(Text)
+    climate = Column(String(250), nullable=False)
+    population = Column(String(250), nullable=False)
+  
+    # planet_id = Column(Integer, ForeignKey('user.id'))
 
-    user = relationship('User', back_populates = 'posts')
-    comments = relationship('Comment', back_populates  = 'post')
-    media = relationship('Media', back_populates = 'post')
-    tags = relationship('Tag', back_populates= 'post')
-    category_id = relationship('Category', back_populates = 'posts')
-    category = relationship('Category', back_populates = 'posts')
-
-
-class Mediatype(PyEnum):
-    IMAGE = 'image'
-    VIDEO = 'video'
-
-class  Media(Base):
-    __tablename__ = 'media'
+    
+class Starship(Base):
+    __tablename__ = 'starships'
+    # Here we define columns for the table address.
+    # Notice that each column is also a normal Python instance attribute.
     id = Column(Integer, primary_key=True)
-    type = Column(Enum(Mediatype), nullable = False)
-    url = Column(String(250), nullable = False)
-    post_id = Column(Integer, ForeignKey('posts.id'), nullable = False)
-    post = relationship('Post', back_populates = 'media')
+    name = Column(String, nullable =False)
+    size = Column(Integer, ForeignKey('user.id'), nullable = False)
+    type = Column(String, nullable = False)
+    speed = Column(Text)
 
-class Comment(Base):
-    __tablename__ = 'comments'
+    # Starship_id = Column(Integer, ForeignKey('user.id'))
+
+
+class Favorite(Base):
+    __tablename__ = 'favorites'
     id = Column(Integer, primary_key=True)
-    comment_text = Column(String(250), nullable = True)
-    author_id = Column(Integer, ForeignKey('users.id'), nullable = False)
-    post_id = Column(Integer, ForeignKey('posts.id'), nullable = False)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    planets_id = Column(Integer, ForeignKey('planets.id'))
+    character_id = Column(Integer, ForeignKey('characters.id'))
+    starship_id = Column(Integer, ForeignKey('starship.id'))
+    
+    favorites_user = relationship('User')
 
-    user = relationship('User', back_populates = 'comments')
-    post = relationship('Post', back_populates = 'comments')
+    favorites_planets = relationship('Planet')
+    favorites_characters = relationship('Character')
+    favorites_starships = relationship('Starship')
 
-class Category(Base):
-    __tablename__ = 'categories'
-    id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True, nullable = False)
+ 
 
-
-    posts = relationship('Post', back_populates = 'category')
-
-
-class Tag(Base):
-    __tablename__ = 'tags'
-    id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True, nullable = False )
-
-    posts = relationship('Post', back_populates = 'tags')
 
 
 
